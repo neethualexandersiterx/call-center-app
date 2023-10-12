@@ -50,13 +50,14 @@ app.post("/addcaller", async (req, res) => {
     app.post("/callers/search", async (req, res) => {
         try {
           const { searchTerm, searchBy } = req.body;
-      
+          console.log(searchTerm, searchBy);
           // Check if searchBy is "Name" or "Phone" and construct the appropriate SQL query
           let sqlQuery;
           if (searchBy === "Name") {
             sqlQuery = "SELECT * FROM calllist WHERE Name ILIKE $1";
           } else if (searchBy === "Phone") {
-            sqlQuery = "SELECT * FROM calllist WHERE phone = $1";
+            console.log("enter into phne");
+            sqlQuery = "SELECT * FROM calllist WHERE phone ILIKE $1";
           } else {
             // Handle invalid searchBy criteria here, if needed.
             res.status(400).json({ error: "Invalid searchBy criteria" });
@@ -70,6 +71,16 @@ app.post("/addcaller", async (req, res) => {
           res.status(500).json({ error: "Internal server error" });
         }
       });
+      app.get('/callers/:id',async(req,res)=>{
+          try{
+            const {id}=req.params;
+            const callers=await pool.query("SELECT * FROM calllist WHERE caller_id=$1",[id])
+            res.json(callers.rows[0]);
+
+          } catch(err){
+            console.log(err.message);
+          }
+      })
       
 
 
